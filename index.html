@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Donald Duck Tracker</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#101a30">
+<link rel="stylesheet" href="style.css">
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<div id="authScreen">
+  <form id="authForm" class="auth-card">
+    <h1>&#129414; Donald Duck Tracker</h1>
+    <div class="sub">Log in om je gelezen nummers overal bij te houden.</div>
+    <input id="authEmail" type="email" placeholder="E-mailadres" required autocomplete="email">
+    <input id="authPassword" type="password" placeholder="Wachtwoord" required minlength="6" autocomplete="current-password">
+    <button type="submit" id="btnAuthSubmit" class="btn btn-primary">Inloggen</button>
+    <button type="button" id="btnAuthToggle" class="btn btn-ghost">Nog geen account? Aanmaken</button>
+    <div id="authStatus"></div>
+  </form>
+</div>
+
+<div id="appScreen" class="hidden">
+  <header class="topbar">
+    <div class="brand">&#129414; DD Tracker</div>
+    <div class="topbar-actions">
+      <button id="btnQuickCheck" class="icon-btn" title="Snel opzoeken">&#128269;</button>
+      <button id="btnLogout" class="icon-btn" title="Uitloggen">&#128682;</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- HOME -->
+    <section id="view-home" class="view active">
+      <div class="home-tiles">
+        <button class="tile" data-open="dd_weekblad">
+          <span class="emoji">&#128218;</span>
+          <div>
+            <div class="tile-title">Donald Duck Weekblad</div>
+            <div class="tile-sub">Per jaargang, week 1&ndash;52</div>
+          </div>
+        </button>
+        <button class="tile" data-open="kd_weekblad">
+          <span class="emoji">&#127925;</span>
+          <div>
+            <div class="tile-title">Katrien Duck Weekblad</div>
+            <div class="tile-sub">Per jaargang, maand 1&ndash;12</div>
+          </div>
+        </button>
+        <button class="tile" data-open="pockets">
+          <span class="emoji">&#128214;</span>
+          <div>
+            <div class="tile-title">Pockets</div>
+            <div class="tile-sub">Pocket &amp; Dubbel Pocket</div>
+          </div>
+        </button>
+      </div>
+    </section>
+
+    <!-- YEAR GRID (DD / KD) -->
+    <section id="view-yeargrid" class="view">
+      <div class="view-header">
+        <button class="back-btn" data-back="view-home">&#8592;</button>
+        <h2 id="yeargridTitle">Donald Duck Weekblad</h2>
+      </div>
+      <div id="yearRow" class="year-row"></div>
+      <div id="heatmap" class="heatmap"></div>
+
+      <div class="add-special-row">
+        <button id="btnToggleSpecialForm" class="btn btn-ghost">+ Speciale editie toevoegen aan dit jaar</button>
+        <div id="specialForm" class="inline-form hidden">
+          <input id="specialLabel" type="text" placeholder="Naam speciale editie (bv. Zomerspecial)">
+          <button id="btnAddSpecial" class="btn btn-primary" style="width:auto;">Toevoegen</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- POCKETS -->
+    <section id="view-pockets" class="view">
+      <div class="view-header">
+        <button class="back-btn" data-back="view-home">&#8592;</button>
+        <h2>Pockets</h2>
+      </div>
+      <div class="subtabs">
+        <button class="subtab active" data-pockettab="pocket">Pocket</button>
+        <button class="subtab" data-pockettab="dubbel_pocket">Dubbel Pocket</button>
+      </div>
+
+      <div id="pocketList" class="pocket-list"></div>
+
+      <div class="section-label">Nieuwe toevoegen</div>
+      <div class="inline-form">
+        <input id="pocketNumber" type="number" placeholder="Nummer" style="max-width:100px;">
+        <input id="pocketTheme" type="text" placeholder="Thema / titel (optioneel)">
+        <button id="btnAddPocket" class="btn btn-primary" style="width:auto;">+ Toevoegen</button>
+      </div>
+    </section>
+
+    <!-- QUICK CHECK -->
+    <section id="view-quickcheck" class="view">
+      <div class="view-header">
+        <button class="back-btn" data-back="view-home">&#8592;</button>
+        <h2>Snel opzoeken</h2>
+      </div>
+      <form id="qcForm" class="qc-form">
+        <select id="qcType">
+          <option value="dd_weekblad">Donald Duck Weekblad</option>
+          <option value="kd_weekblad">Katrien Duck Weekblad</option>
+          <option value="pocket">Pocket</option>
+          <option value="dubbel_pocket">Dubbel Pocket</option>
+        </select>
+        <input id="qcYear" type="number" placeholder="Jaargang (bv. 2023)">
+        <input id="qcNumber" type="number" placeholder="Nummer" required>
+        <button type="submit" class="btn btn-primary">Check</button>
+      </form>
+      <div id="qcResult" class="qc-result hidden"></div>
+    </section>
+  </main>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
