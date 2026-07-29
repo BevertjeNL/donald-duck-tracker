@@ -32,3 +32,6 @@ create policy "update own magazines" on public.magazines
 
 create policy "delete own magazines" on public.magazines
   for delete using (auth.uid() = user_id);
+
+grant usage on schema public to authenticated;
+grant select, insert, update, delete on public.magazines to authenticated;

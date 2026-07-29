@@ -1,8 +1,8 @@
 // ---- Supabase config ----
 // Vul dit in met de Project URL en anon key van je NIEUWE Supabase-project
 // (Project Settings > API). Run eerst supabase.sql in de SQL editor van dat project.
-const SUPABASE_URL = 'VUL_HIER_JE_SUPABASE_PROJECT_URL_IN';
-const SUPABASE_ANON_KEY = 'VUL_HIER_JE_SUPABASE_ANON_KEY_IN';
+const SUPABASE_URL = 'https://aqjrdtanuinleufvcppd.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFxanJkdGFudWlubGV1ZnZjcHBkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ5MDAzNTUsImV4cCI6MjEwMDQ3NjM1NX0.rcWCss0WveZO7VzMn4AoqRfg5pzawUVbYHLuWyobEVI';
 
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
