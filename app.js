@@ -367,6 +367,62 @@ $('authForm').addEventListener('submit', async (e) => {
   }
 });
 
+// ---------- forgot / reset password ----------
+function showAuthCard(id) {
+  ['authForm', 'forgotForm', 'resetPasswordForm'].forEach((formId) => {
+    $(formId).classList.toggle('hidden', formId !== id);
+  });
+}
+
+$('btnForgotPassword').addEventListener('click', () => {
+  $('forgotStatus').textContent = '';
+  $('forgotEmail').value = $('authEmail').value.trim();
+  showAuthCard('forgotForm');
+});
+
+$('btnForgotBack').addEventListener('click', () => {
+  $('authStatus').textContent = '';
+  showAuthCard('authForm');
+});
+
+$('forgotForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = $('forgotEmail').value.trim();
+  $('forgotStatus').style.color = '';
+  $('forgotStatus').textContent = '';
+  try {
+    const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + window.location.pathname,
+    });
+    if (error) throw error;
+    $('forgotStatus').style.color = 'var(--unread)';
+    $('forgotStatus').textContent = 'Check je mail voor de link om een nieuw wachtwoord in te stellen.';
+  } catch (err) {
+    $('forgotStatus').textContent = err.message || 'Er ging iets mis.';
+  }
+});
+
+$('resetPasswordForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const password = $('resetPassword').value;
+  const confirm = $('resetPasswordConfirm').value;
+  $('resetStatus').textContent = '';
+  if (password !== confirm) {
+    $('resetStatus').textContent = 'Wachtwoorden komen niet overeen.';
+    return;
+  }
+  try {
+    const { error } = await supabaseClient.auth.updateUser({ password });
+    if (error) throw error;
+    $('resetPasswordForm').reset();
+    showAuthCard('authForm');
+    $('authStatus').style.color = 'var(--unread)';
+    $('authStatus').textContent = 'Wachtwoord gewijzigd. Je kunt nu inloggen.';
+  } catch (err) {
+    $('resetStatus').textContent = err.message || 'Er ging iets mis.';
+  }
+});
+
 $('btnLogout').addEventListener('click', async () => {
   await supabaseClient.auth.signOut();
 });
@@ -396,6 +452,12 @@ function onLogout() {
 }
 
 supabaseClient.auth.onAuthStateChange((event, session) => {
+  if (event === 'PASSWORD_RECOVERY') {
+    $('appScreen').classList.add('hidden');
+    $('authScreen').classList.remove('hidden');
+    showAuthCard('resetPasswordForm');
+    return;
+  }
   if (session && session.user) onLogin(session.user);
   else onLogout();
 });
