@@ -20,34 +20,10 @@
 <body>
 
 <div id="authScreen">
-  <form id="authForm" class="auth-card">
+  <div class="auth-card">
     <h1>&#129414; Donald Duck Tracker</h1>
-    <div class="sub">Log in om je gelezen nummers overal bij te houden.</div>
-    <input id="authEmail" type="email" placeholder="E-mailadres" required autocomplete="email">
-    <input id="authPassword" type="password" placeholder="Wachtwoord" required minlength="6" autocomplete="current-password">
-    <button type="submit" id="btnAuthSubmit" class="btn btn-primary">Inloggen</button>
-    <button type="button" id="btnAuthToggle" class="btn btn-ghost">Nog geen account? Aanmaken</button>
-    <button type="button" id="btnForgotPassword" class="btn btn-ghost">Wachtwoord vergeten?</button>
-    <div id="authStatus"></div>
-  </form>
-
-  <form id="forgotForm" class="auth-card hidden">
-    <h1>Wachtwoord vergeten</h1>
-    <div class="sub">Vul je e-mailadres in, dan sturen we een link om een nieuw wachtwoord in te stellen.</div>
-    <input id="forgotEmail" type="email" placeholder="E-mailadres" required autocomplete="email">
-    <button type="submit" id="btnForgotSubmit" class="btn btn-primary">Verstuur link</button>
-    <button type="button" id="btnForgotBack" class="btn btn-ghost">Terug naar inloggen</button>
-    <div id="forgotStatus"></div>
-  </form>
-
-  <form id="resetPasswordForm" class="auth-card hidden">
-    <h1>Nieuw wachtwoord</h1>
-    <div class="sub">Kies een nieuw wachtwoord voor je account.</div>
-    <input id="resetPassword" type="password" placeholder="Nieuw wachtwoord" required minlength="6" autocomplete="new-password">
-    <input id="resetPasswordConfirm" type="password" placeholder="Herhaal wachtwoord" required minlength="6" autocomplete="new-password">
-    <button type="submit" id="btnResetSubmit" class="btn btn-primary">Wachtwoord opslaan</button>
-    <div id="resetStatus"></div>
-  </form>
+    <div class="sub" id="authStatus">Bezig met laden&hellip;</div>
+  </div>
 </div>
 
 <div id="appScreen" class="hidden">
@@ -55,7 +31,6 @@
     <div class="brand">&#129414; DD Tracker</div>
     <div class="topbar-actions">
       <button id="btnQuickCheck" class="icon-btn" title="Snel opzoeken">&#128269;</button>
-      <button id="btnLogout" class="icon-btn" title="Uitloggen">&#128682;</button>
     </div>
   </header>
 

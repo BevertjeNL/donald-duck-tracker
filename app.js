@@ -6,6 +6,10 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+// Vast account: de app logt hier automatisch mee in, geen inlogscherm nodig.
+const FIXED_EMAIL = 'thomas.kern@mailo.com';
+const FIXED_PASSWORD = 'Donald';
+
 const START_YEAR = 2017;
 const TYPE_LABELS = {
   dd_weekblad: 'Donald Duck Weekblad',
@@ -23,7 +27,6 @@ let realtimeChannel = null;
 let currentType = 'dd_weekblad';
 let currentYear = new Date().getFullYear();
 let currentPocketTab = 'pocket';
-let isSignup = false;
 
 // ---------- helpers ----------
 function $(id) { return document.getElementById(id); }
@@ -340,93 +343,7 @@ document.querySelectorAll('[data-back]').forEach((btn) => {
   btn.addEventListener('click', () => showView(btn.dataset.back));
 });
 
-// ---------- auth ----------
-$('btnAuthToggle').addEventListener('click', () => {
-  isSignup = !isSignup;
-  $('btnAuthSubmit').textContent = isSignup ? 'Account aanmaken' : 'Inloggen';
-  $('btnAuthToggle').textContent = isSignup ? 'Al een account? Inloggen' : 'Nog geen account? Aanmaken';
-  $('authStatus').textContent = '';
-});
-
-$('authForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const email = $('authEmail').value.trim();
-  const password = $('authPassword').value;
-  $('authStatus').textContent = '';
-  try {
-    if (isSignup) {
-      const { error } = await supabaseClient.auth.signUp({ email, password });
-      if (error) throw error;
-      $('authStatus').textContent = 'Account aangemaakt. Check je mail als bevestiging nodig is, of log nu in.';
-    } else {
-      const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-      if (error) throw error;
-    }
-  } catch (err) {
-    $('authStatus').textContent = err.message || 'Er ging iets mis.';
-  }
-});
-
-// ---------- forgot / reset password ----------
-function showAuthCard(id) {
-  ['authForm', 'forgotForm', 'resetPasswordForm'].forEach((formId) => {
-    $(formId).classList.toggle('hidden', formId !== id);
-  });
-}
-
-$('btnForgotPassword').addEventListener('click', () => {
-  $('forgotStatus').textContent = '';
-  $('forgotEmail').value = $('authEmail').value.trim();
-  showAuthCard('forgotForm');
-});
-
-$('btnForgotBack').addEventListener('click', () => {
-  $('authStatus').textContent = '';
-  showAuthCard('authForm');
-});
-
-$('forgotForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const email = $('forgotEmail').value.trim();
-  $('forgotStatus').style.color = '';
-  $('forgotStatus').textContent = '';
-  try {
-    const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-      redirectTo: window.location.origin + window.location.pathname,
-    });
-    if (error) throw error;
-    $('forgotStatus').style.color = 'var(--unread)';
-    $('forgotStatus').textContent = 'Check je mail voor de link om een nieuw wachtwoord in te stellen.';
-  } catch (err) {
-    $('forgotStatus').textContent = err.message || 'Er ging iets mis.';
-  }
-});
-
-$('resetPasswordForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const password = $('resetPassword').value;
-  const confirm = $('resetPasswordConfirm').value;
-  $('resetStatus').textContent = '';
-  if (password !== confirm) {
-    $('resetStatus').textContent = 'Wachtwoorden komen niet overeen.';
-    return;
-  }
-  try {
-    const { error } = await supabaseClient.auth.updateUser({ password });
-    if (error) throw error;
-    $('resetPasswordForm').reset();
-    showAuthCard('authForm');
-    $('authStatus').style.color = 'var(--unread)';
-    $('authStatus').textContent = 'Wachtwoord gewijzigd. Je kunt nu inloggen.';
-  } catch (err) {
-    $('resetStatus').textContent = err.message || 'Er ging iets mis.';
-  }
-});
-
-$('btnLogout').addEventListener('click', async () => {
-  await supabaseClient.auth.signOut();
-});
-
+// ---------- auth (vast account, geen inlogscherm) ----------
 async function onLogin(user) {
   currentUser = user;
   $('authScreen').classList.add('hidden');
@@ -452,16 +369,25 @@ function onLogout() {
 }
 
 supabaseClient.auth.onAuthStateChange((event, session) => {
-  if (event === 'PASSWORD_RECOVERY') {
-    $('appScreen').classList.add('hidden');
-    $('authScreen').classList.remove('hidden');
-    showAuthCard('resetPasswordForm');
-    return;
-  }
   if (session && session.user) onLogin(session.user);
   else onLogout();
 });
 
-supabaseClient.auth.getSession().then(({ data }) => {
-  if (data.session && data.session.user) onLogin(data.session.user);
-});
+async function autoLogin() {
+  const { data } = await supabaseClient.auth.getSession();
+  if (data.session && data.session.user) {
+    onLogin(data.session.user);
+    return;
+  }
+  try {
+    const { error } = await supabaseClient.auth.signInWithPassword({
+      email: FIXED_EMAIL,
+      password: FIXED_PASSWORD,
+    });
+    if (error) throw error;
+  } catch (err) {
+    $('authStatus').textContent = 'Kon niet automatisch inloggen: ' + (err.message || 'onbekende fout');
+  }
+}
+
+autoLogin();
