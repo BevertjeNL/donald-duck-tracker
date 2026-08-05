@@ -375,7 +375,7 @@ supabaseClient.auth.onAuthStateChange((event, session) => {
 
 async function autoLogin() {
   const { data } = await supabaseClient.auth.getSession();
-  if (data.session && data.session.user) {
+  if (data.session && data.session.user && data.session.user.email === FIXED_EMAIL) {
     onLogin(data.session.user);
     return;
   }
