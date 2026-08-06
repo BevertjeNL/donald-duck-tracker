@@ -341,7 +341,6 @@ document.querySelectorAll('[data-open]').forEach((btn) => {
   btn.addEventListener('click', () => {
     const target = btn.dataset.open;
     if (target === 'pockets') { showView('view-pockets'); renderPockets(); }
-    else if (target === 'quickcheck') { $('btnQuickCheck').click(); }
     else openYearGrid(target);
   });
 });

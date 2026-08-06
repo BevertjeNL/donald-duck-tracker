@@ -191,7 +191,6 @@ main { padding: 16px 16px 80px; max-width: 720px; margin: 0 auto; }
 .tile-blue { --tile-color: #3f9dff; }
 .tile-pink { --tile-color: #ec4899; }
 .tile-teal { --tile-color: #14d0b8; }
-.tile-violet { --tile-color: #8b6bfa; }
 
 .quickcheck-banner {
   margin-top: 16px;
