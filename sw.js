@@ -1,4 +1,4 @@
-const CACHE = 'dd-tracker-v1';
+const CACHE = 'dd-tracker-v1.1.0';
 const ASSETS = ['./', './index.html', './manifest.json'];
 
 self.addEventListener('install', (event) => {

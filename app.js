@@ -6,6 +6,12 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+const APP_VERSION = '1.1.0';
+document.addEventListener('DOMContentLoaded', () => {
+  const el = document.getElementById('appVersion');
+  if (el) el.textContent = 'v' + APP_VERSION;
+});
+
 // Vast account: de app logt hier automatisch mee in, geen inlogscherm nodig.
 const FIXED_EMAIL = 'thomas.kern@mailo.com';
 const FIXED_PASSWORD = 'Donald';
