@@ -158,6 +158,7 @@ main { padding: 16px 16px 80px; max-width: 720px; margin: 0 auto; }
 .tile {
   background: var(--card);
   border: 1px solid var(--border);
+  border-left: 4px solid var(--tile-color, var(--accent));
   border-radius: var(--radius);
   padding: 22px;
   text-align: left;
@@ -166,11 +167,31 @@ main { padding: 16px 16px 80px; max-width: 720px; margin: 0 auto; }
   display: flex;
   align-items: center;
   gap: 16px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.tile .emoji { font-size: 2rem; }
+.tile:active { transform: scale(0.98); }
+
+.tile .emoji {
+  font-size: 1.6rem;
+  width: 46px;
+  height: 46px;
+  min-width: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--tile-color, var(--accent));
+  box-shadow: 0 4px 14px -4px var(--tile-color, var(--accent));
+}
+
 .tile .tile-title { font-weight: 700; font-size: 1.05rem; }
 .tile .tile-sub { color: var(--text-dim); font-size: 0.85rem; margin-top: 2px; }
+
+.tile-blue { --tile-color: #3f9dff; }
+.tile-pink { --tile-color: #ec4899; }
+.tile-teal { --tile-color: #14d0b8; }
+.tile-violet { --tile-color: #8b6bfa; }
 
 .quickcheck-banner {
   margin-top: 16px;

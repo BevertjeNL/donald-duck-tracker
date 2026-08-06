@@ -6,7 +6,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const APP_VERSION = '1.1.0';
+const APP_VERSION = '1.2.0';
 document.addEventListener('DOMContentLoaded', () => {
   const el = document.getElementById('appVersion');
   if (el) el.textContent = 'v' + APP_VERSION;
@@ -341,6 +341,7 @@ document.querySelectorAll('[data-open]').forEach((btn) => {
   btn.addEventListener('click', () => {
     const target = btn.dataset.open;
     if (target === 'pockets') { showView('view-pockets'); renderPockets(); }
+    else if (target === 'quickcheck') { $('btnQuickCheck').click(); }
     else openYearGrid(target);
   });
 });
