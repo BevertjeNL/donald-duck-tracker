@@ -15,7 +15,7 @@
 <link rel="icon" href="icons/icon-192.png" type="image/png">
 
 <link rel="stylesheet" href="style.css">
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script src="https://unpkg.com/@supabase/supabase-js@2.56.1/dist/umd/supabase.js" crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -38,26 +38,29 @@
     <!-- HOME -->
     <section id="view-home" class="view active">
       <div class="home-tiles">
-        <button class="tile tile-blue" data-open="dd_weekblad">
-          <span class="emoji">&#128218;</span>
+        <button class="tile" data-open="dd_weekblad">
+          <span class="emoji" aria-hidden="true">&#128218;</span>
           <div>
             <div class="tile-title">Donald Duck Weekblad</div>
             <div class="tile-sub">Per jaargang, week 1&ndash;52</div>
           </div>
+          <span class="tile-arrow" aria-hidden="true">&#8594;</span>
         </button>
-        <button class="tile tile-pink" data-open="kd_weekblad">
-          <span class="emoji">&#127925;</span>
+        <button class="tile" data-open="kd_weekblad">
+          <span class="emoji" aria-hidden="true">&#127925;</span>
           <div>
             <div class="tile-title">Katrien Duck Weekblad</div>
             <div class="tile-sub">Per jaargang, maand 1&ndash;12</div>
           </div>
+          <span class="tile-arrow" aria-hidden="true">&#8594;</span>
         </button>
-        <button class="tile tile-teal" data-open="pockets">
-          <span class="emoji">&#128214;</span>
+        <button class="tile" data-open="pockets">
+          <span class="emoji" aria-hidden="true">&#128214;</span>
           <div>
             <div class="tile-title">Pockets</div>
             <div class="tile-sub">Pocket &amp; Dubbel Pocket</div>
           </div>
+          <span class="tile-arrow" aria-hidden="true">&#8594;</span>
         </button>
       </div>
     </section>
@@ -95,7 +98,7 @@
 
       <div class="section-label">Nieuwe toevoegen</div>
       <div class="inline-form">
-        <input id="pocketNumber" type="number" placeholder="Nummer" style="max-width:100px;">
+        <input id="pocketNumber" type="number" min="1" step="1" placeholder="Nummer" style="max-width:100px;">
         <input id="pocketTheme" type="text" placeholder="Thema / titel (optioneel)">
         <button id="btnAddPocket" class="btn btn-primary" style="width:auto;">+ Toevoegen</button>
       </div>
@@ -114,14 +117,16 @@
           <option value="pocket">Pocket</option>
           <option value="dubbel_pocket">Dubbel Pocket</option>
         </select>
-        <input id="qcYear" type="number" placeholder="Jaargang (bv. 2023)">
-        <input id="qcNumber" type="number" placeholder="Nummer" required>
+        <input id="qcYear" type="number" min="1901" max="9999" step="1" placeholder="Jaargang (bv. 2023)">
+        <input id="qcNumber" type="number" min="1" step="1" placeholder="Nummer" required>
         <button type="submit" class="btn btn-primary">Check</button>
       </form>
       <div id="qcResult" class="qc-result hidden"></div>
     </section>
   </main>
 </div>
+
+<div id="appStatus" class="app-status hidden" role="status" aria-live="polite"></div>
 
 <script src="app.js"></script>
 </body>

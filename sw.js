@@ -1,8 +1,17 @@
-const CACHE = 'dd-tracker-v1.2.0';
-const ASSETS = ['./', './index.html', './manifest.json'];
+const CACHE = 'dd-tracker-v1.3.0';
+const APP_SHELL = [
+  './',
+  './index.html',
+  './app.js',
+  './style.css',
+  './manifest.json',
+  './icons/icon-192.png',
+  './icons/icon-512.png',
+  'https://unpkg.com/@supabase/supabase-js@2.56.1/dist/umd/supabase.js',
+];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(ASSETS)));
+  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(APP_SHELL)));
   self.skipWaiting();
 });
 
@@ -17,13 +26,19 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
+  const url = new URL(event.request.url);
+  const isAppAsset = url.origin === self.location.origin || url.hostname === 'unpkg.com';
+  if (!isAppAsset) return;
+
   event.respondWith(
-    fetch(event.request)
-      .then((res) => {
-        const copy = res.clone();
-        caches.open(CACHE).then((cache) => cache.put(event.request, copy));
-        return res;
-      })
-      .catch(() => caches.match(event.request))
+    caches.match(event.request).then((cached) => {
+      const network = fetch(event.request).then((response) => {
+        if (response.ok || response.type === 'opaque') {
+          caches.open(CACHE).then((cache) => cache.put(event.request, response.clone()));
+        }
+        return response;
+      }).catch(() => cached);
+      return cached || network;
+    })
   );
 });
