@@ -1,49 +1,69 @@
 # 🦆 Donald Duck Tracker
 
 Een kleine Progressive Web App om bij te houden welke nummers van
-**Donald Duck Weekblad**, **Katrien Duck Weekblad** en **Pockets** je
-al gelezen hebt — per jaargang, met een overzichtelijke heatmap.
+**Donald Duck Weekblad**, **Katrien Duck Weekblad** en **Pockets** je al
+gelezen hebt, per jaargang en met een heatmap.
 
 **Live:** https://donald-duck-tracker.vercel.app/
 
 ## Wat kan de app
 
-- **Donald Duck Weekblad** — bijhouden per jaargang, week 1 t/m 52
-- **Katrien Duck Weekblad** — bijhouden per jaargang, maand 1 t/m 12
-- **Pockets & Dubbel Pockets** — losse lijst met nummer en thema/titel
-- Speciale edities toevoegen aan een jaargang
-- Snel opzoeken of een specifiek nummer al gelezen is
-- Werkt als PWA: toe te voegen aan je beginscherm (iOS/Android) met
-  eigen icoon, en werkt met een service worker deels offline
-- Data staat in Neon (Postgres), dus je voortgang staat
-  klaar op elk apparaat
+- **Donald Duck Weekblad:** per jaargang, week 1 t/m 52, als heatmap. Tik op
+  een tegel om gelezen of ongelezen te wisselen.
+- **Katrien Duck Weekblad:** per jaargang, maand 1 t/m 12.
+- **Pockets en Dubbel Pockets:** lijst met nummer en thema of titel. Wisselen,
+  bewerken en verwijderen.
+- **Speciale edities** toevoegen aan een jaargang.
+- **Jaargangen:** vanaf 2017, met `+ jaar` voor andere jaren.
+- **Snel opzoeken:** controleer of een specifiek nummer al gelezen is.
+- **Backup:** de knop 💾 downloadt alles als
+  `donald-duck-tracker-backup-JJJJ-MM-DD.json`.
+- **PWA:** op je beginscherm te zetten (iOS en Android), met eigen icoon.
+  De app-bestanden worden gecachet, maar zonder internet laadt de data niet.
+- Je voortgang staat in een database, dus op elk apparaat hetzelfde.
+  Wijzigingen van een ander apparaat zie je na herladen.
 
-## Opstarten
-
-Dit is een **vanilla HTML/CSS/JS** project zonder build-stap — er is
-geen `npm install` of compileerstap nodig.
-
-1. Clone de repo
-2. Draai `schema.sql` in je Neon-database en zet `DATABASE_URL` als
-   omgevingsvariabele in Vercel
-3. Lokaal draaien kan met `vercel dev`; de gewone `index.html` heeft de
-   `/api`-functie nodig.
-
-## Tech stack
-
-- HTML, CSS en JavaScript, geen framework
-- [Neon](https://neon.com) Postgres voor dataopslag
-- Vercel voor hosting en de serverfunctie, gedeployed vanaf de `main` branch
-
-## Bestandsstructuur
+## Hoe het werkt
 
 ```
-index.html      Alle markup / pagina-secties
-app.js          Alle applicatielogica
-style.css       Styling
-manifest.json   PWA-manifest
-sw.js           Service worker (offline/cache)
-schema.sql      Databaseschema voor Neon
-api/            Serverfunctie voor lezen en schrijven
-icons/          App-iconen
+Browser (index.html + app.js)  --fetch-->  /api/magazines  --HTTPS-->  Neon Postgres
 ```
+
+- **Frontend:** vanilla HTML, CSS en JavaScript. Geen framework, geen
+  build-stap, geen `package.json`.
+- **API:** één Vercel-functie (`api/magazines.js`) die lezen, toevoegen,
+  wijzigen en verwijderen doet, zonder dependencies.
+- **Database:** [Neon](https://neon.com) Postgres, tabel `magazines`
+  (zie `schema.sql`).
+- **Hosting:** [Vercel](https://vercel.com), automatisch gedeployed vanaf de
+  `main` branch.
+- Er is geen inlogscherm. Wie de URL kent, kan lezen en schrijven. Maak daarom
+  af en toe een backup.
+
+## Zelf opzetten
+
+1. Maak een Neon-project en draai `schema.sql` in de SQL-editor.
+2. Maak een Vercel-project gekoppeld aan deze repo. Zet de Neon connection
+   string als omgevingsvariabele `DATABASE_URL` (production en preview).
+3. Zet Vercel Authentication uit voor het project, anders vraagt de app om een
+   Vercel-login.
+4. Push naar `main`, Vercel deployt vanzelf.
+
+Lokaal draaien kan met `vercel dev` (de pagina heeft `/api` nodig). Alleen
+`index.html` openen werkt niet.
+
+## Bestanden
+
+```
+index.html        Alle markup, één pagina met meerdere views
+app.js            Alle applicatielogica
+style.css         Styling (donker navy/goud thema)
+api/magazines.js  Serverfunctie: lezen en schrijven naar Neon
+schema.sql        Databaseschema voor Neon
+sw.js             Service worker (cache van de app-shell, nooit van /api)
+manifest.json     PWA-manifest
+icons/            App-iconen (192, 512, 1024 en apple-touch-icon)
+CLAUDE.md         Technische uitleg voor AI-sessies
+```
+
+Versie: 2.1.1
