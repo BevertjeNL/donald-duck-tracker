@@ -1,4 +1,4 @@
-const CACHE = 'dd-tracker-v1.3.0';
+const CACHE = 'dd-tracker-v2.0.0';
 const APP_SHELL = [
   './',
   './index.html',
@@ -7,7 +7,6 @@ const APP_SHELL = [
   './manifest.json',
   './icons/icon-192.png',
   './icons/icon-512.png',
-  'https://unpkg.com/@supabase/supabase-js@2.56.1/dist/umd/supabase.js',
 ];
 
 self.addEventListener('install', (event) => {
@@ -27,8 +26,7 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   const url = new URL(event.request.url);
-  const isAppAsset = url.origin === self.location.origin || url.hostname === 'unpkg.com';
-  if (!isAppAsset) return;
+  if (url.origin !== self.location.origin || url.pathname.startsWith('/api/')) return;
 
   event.respondWith(
     caches.match(event.request).then((cached) => {

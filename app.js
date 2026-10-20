@@ -1,22 +1,8 @@
-// ---- Supabase config ----
-// Vul dit in met de Project URL en anon key van je NIEUWE Supabase-project
-// (Project Settings > API). Run eerst supabase.sql in de SQL editor van dat project.
-const SUPABASE_URL = 'https://aqjrdtanuinleufvcppd.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFxanJkdGFudWlubGV1ZnZjcHBkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ5MDAzNTUsImV4cCI6MjEwMDQ3NjM1NX0.rcWCss0WveZO7VzMn4AoqRfg5pzawUVbYHLuWyobEVI';
-
-const supabaseClient = window.supabase
-  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-  : null;
-
-const APP_VERSION = '1.3.0';
+const APP_VERSION = '2.0.0';
 document.addEventListener('DOMContentLoaded', () => {
   const el = document.getElementById('appVersion');
   if (el) el.textContent = 'v' + APP_VERSION;
 });
-
-// Vast account: de app logt hier automatisch mee in, geen inlogscherm nodig.
-const FIXED_EMAIL = 'thomas.kern@mailo.com';
-const FIXED_PASSWORD = 'Donald';
 
 const START_YEAR = 2017;
 const TYPE_LABELS = {
@@ -28,9 +14,7 @@ const TYPE_LABELS = {
 const TYPE_MAX_NUMBER = { dd_weekblad: 52, kd_weekblad: 12 };
 const TYPE_UNIT = { dd_weekblad: 'week', kd_weekblad: 'maand' };
 
-let currentUser = null;
 let magazines = [];
-let realtimeChannel = null;
 let statusTimer = null;
 const pendingMutations = new Set();
 
@@ -41,9 +25,17 @@ let currentPocketTab = 'pocket';
 // ---------- helpers ----------
 function $(id) { return document.getElementById(id); }
 
-if (!supabaseClient) {
-  $('authStatus').textContent = 'De app kon niet worden geladen. Controleer je internetverbinding en herlaad de pagina.';
-  throw new Error('Supabase dependency kon niet worden geladen.');
+async function api(method, query = '', body) {
+  const res = await fetch('/api/magazines' + query, {
+    method,
+    headers: body ? { 'Content-Type': 'application/json' } : undefined,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw Object.assign(new Error(data.error || 'Serverfout'), { code: data.code });
+  }
+  return res.status === 204 ? null : res.json();
 }
 
 function showStatus(message, kind = 'error') {
@@ -112,16 +104,12 @@ function findRow(type, year, number, isSpecial) {
 }
 
 async function refetchMagazines() {
-  const { data, error } = await supabaseClient
-    .from('magazines')
-    .select('*')
-    .order('year', { ascending: true })
-    .order('number', { ascending: true });
-  if (error) {
+  try {
+    magazines = await api('GET');
+  } catch (error) {
     showStatus(errorMessage(error, 'De collectie kon niet worden geladen.'));
     return false;
   }
-  magazines = data || [];
   renderCurrentView();
   return true;
 }
@@ -129,49 +117,36 @@ async function refetchMagazines() {
 async function toggleGelezen(row) {
   return withMutation(`toggle:${row.id}`, async () => {
     const newVal = !row.gelezen;
-    const { data, error } = await supabaseClient
-      .from('magazines')
-      .update({ gelezen: newVal, gelezen_op: newVal ? new Date().toISOString() : null })
-      .eq('id', row.id)
-      .eq('gelezen', row.gelezen)
-      .select()
-      .maybeSingle();
-    if (error) {
+    try {
+      const data = await api('PATCH', `?id=${row.id}`, {
+        gelezen: newVal,
+        gelezen_op: newVal ? new Date().toISOString() : null,
+      });
+      const idx = magazines.findIndex((m) => m.id === row.id);
+      if (idx >= 0) magazines[idx] = data;
+      return data;
+    } catch (error) {
       showStatus(errorMessage(error, 'De status kon niet worden gewijzigd.'));
       return null;
     }
-    if (!data) {
-      await refetchMagazines();
-      showStatus('De editie was intussen op een ander apparaat gewijzigd. De collectie is vernieuwd.');
-      return null;
-    }
-    const idx = magazines.findIndex((m) => m.id === row.id);
-    if (idx >= 0) magazines[idx] = data;
-    return data;
   });
 }
 
 async function insertRow(partial) {
-  if (!currentUser) {
-    showStatus('Log opnieuw in om een editie toe te voegen.');
-    return null;
-  }
-  const { data, error } = await supabaseClient
-    .from('magazines')
-    .insert({ user_id: currentUser.id, ...partial })
-    .select()
-    .single();
-  if (error) {
+  try {
+    const data = await api('POST', '', partial);
+    magazines.push(data);
+    return data;
+  } catch (error) {
     showStatus(errorMessage(error, 'De editie kon niet worden toegevoegd.'));
     return null;
   }
-  magazines.push(data);
-  return data;
 }
 
 async function deleteRow(id) {
-  const { error } = await supabaseClient.from('magazines').delete().eq('id', id);
-  if (error) {
+  try {
+    await api('DELETE', `?id=${id}`);
+  } catch (error) {
     showStatus(errorMessage(error, 'De editie kon niet worden verwijderd.'));
     return false;
   }
@@ -316,18 +291,13 @@ function renderPockets() {
         showStatus('Vul een nummer of titel in.');
         return;
       }
-      const { data, error } = await supabaseClient
-        .from('magazines')
-        .update({ number, label: theme.trim() || null })
-        .eq('id', row.id)
-        .select()
-        .single();
-      if (error) {
-        showStatus(errorMessage(error, 'De editie kon niet worden bijgewerkt.'));
-      } else {
+      try {
+        const data = await api('PATCH', `?id=${row.id}`, { number, label: theme.trim() || null });
         const idx = magazines.findIndex((m) => m.id === row.id);
         magazines[idx] = data;
         renderPockets();
+      } catch (error) {
+        showStatus(errorMessage(error, 'De editie kon niet worden bijgewerkt.'));
       }
     });
     el.querySelector('[data-action="delete"]').addEventListener('click', async () => {
@@ -442,55 +412,16 @@ document.querySelectorAll('[data-back]').forEach((btn) => {
   btn.addEventListener('click', () => showView(btn.dataset.back));
 });
 
-// ---------- auth (vast account, geen inlogscherm) ----------
-async function onLogin(user) {
-  if (currentUser?.id === user.id) return;
-  currentUser = user;
+// ---------- start ----------
+async function start() {
+  const loaded = await refetchMagazines();
+  if (!loaded) {
+    $('authStatus').textContent = 'De collectie kon niet worden geladen. Herlaad de pagina.';
+    return;
+  }
   $('authScreen').classList.add('hidden');
   $('appScreen').classList.remove('hidden');
   showView('view-home');
-  const loaded = await refetchMagazines();
-  if (!loaded || currentUser?.id !== user.id) return;
-
-  if (realtimeChannel) await supabaseClient.removeChannel(realtimeChannel);
-  realtimeChannel = supabaseClient
-    .channel('magazines-changes')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'magazines', filter: `user_id=eq.${user.id}` }, () => {
-      refetchMagazines();
-    })
-    .subscribe((status) => {
-      if (status === 'CHANNEL_ERROR') showStatus('Live synchronisatie kon niet worden gestart.');
-    });
-}
-
-function onLogout() {
-  currentUser = null;
-  magazines = [];
-  if (realtimeChannel) { supabaseClient.removeChannel(realtimeChannel); realtimeChannel = null; }
-  $('appScreen').classList.add('hidden');
-  $('authScreen').classList.remove('hidden');
-}
-
-supabaseClient.auth.onAuthStateChange((_event, session) => {
-  if (session?.user) void onLogin(session.user);
-  else onLogout();
-});
-
-async function autoLogin() {
-  const { data } = await supabaseClient.auth.getSession();
-  if (data.session && data.session.user && data.session.user.email === FIXED_EMAIL) {
-    onLogin(data.session.user);
-    return;
-  }
-  try {
-    const { error } = await supabaseClient.auth.signInWithPassword({
-      email: FIXED_EMAIL,
-      password: FIXED_PASSWORD,
-    });
-    if (error) throw error;
-  } catch (err) {
-    $('authStatus').textContent = 'Kon niet automatisch inloggen: ' + (err.message || 'onbekende fout');
-  }
 }
 
 if ('serviceWorker' in navigator) {
@@ -501,4 +432,4 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-void autoLogin();
+void start();

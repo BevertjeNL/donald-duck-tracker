@@ -18,7 +18,7 @@ introduceren — dat past niet bij dit project.
 
 - `index.html` — alle HTML/markup, één pagina met meerdere `.view`
   secties die met JS worden getoond/verborgen (geen router).
-- `app.js` — alle logica: Supabase-auth, data ophalen/opslaan,
+- `app.js` — alle logica: data ophalen/opslaan via `/api/magazines`,
   DOM-rendering. Eén bestand, geen modules/imports.
 - `style.css` — alle styling. CSS-variabelen bovenaan (`:root`) voor
   het kleurenpalet (donker navy/goud thema).
@@ -26,27 +26,25 @@ introduceren — dat past niet bij dit project.
 - `sw.js` — service worker voor offline/cache-gedrag. **Bump de
   `CACHE`-naam bij elke inhoudelijke wijziging**, anders blijven
   installed/PWA-gebruikers een oude versie zien.
-- `supabase.sql` — schema voor de `magazines`-tabel (met RLS-policies).
+- `api/magazines.js` — Vercel-functie (CRUD op `magazines` in Neon, via
+  Neon SQL-over-HTTP, zonder dependencies).
+- `schema.sql` — schema voor de `magazines`-tabel in Neon.
 - `icons/` — app-iconen (192/512/1024px + apple-touch-icon), gegenereerd
   als PNG's vanuit een los HTML/SVG-ontwerp (geen bronbestand hiervan
   in de repo — bij een nieuw icoon opnieuw ontwerpen en exporteren).
 
 ## Backend
 
-Supabase wordt gebruikt voor auth + data (tabel `magazines`, RLS
-per `user_id`). **Let op:** dit project deelt zijn Supabase-project
-met een ander project (Reisplanner) — er is geen eigen Supabase-project
-voor Donald Duck Tracker. Raak dus nooit Reisplanner-tabellen, de
-Site URL, of andere gebruikers in dat project aan.
-
-De app logt automatisch in met een vast account (zie `FIXED_EMAIL`/
-`FIXED_PASSWORD` bovenin `app.js`) — er is bewust geen inlogscherm.
+Neon Postgres (project `donald-duck-tracker`, tabel `magazines`),
+bereikt via de serverfunctie `api/magazines.js`. De connection string
+staat als `DATABASE_URL` in de Vercel-omgevingsvariabelen. Er is bewust
+geen inlogscherm en geen auth: het is een persoonlijke naslag-app.
 
 ## Hosting
 
-Statische hosting via **GitHub Pages**, gedeployed vanaf de `main`
-branch. Geen Vercel, geen CI-build — wat in `main` staat is (na de
-Pages-deploy) direct live op `https://bevertjenl.github.io/donald-duck-tracker/`.
+**Vercel** (team `bevertje`), gedeployed vanaf de `main` branch van de
+GitHub-repo. Statische bestanden plus de functie in `api/`. Geen build-stap.
+De oude GitHub Pages-versie draait niet meer op deze code.
 
 ## Regels voor wijzigingen
 
@@ -54,11 +52,10 @@ Pages-deploy) direct live op `https://bevertjenl.github.io/donald-duck-tracker/`
   HTML/CSS/JS.
 - Houd functies in `app.js` klein en overzichtelijk; geen premature
   abstracties voor dingen die maar op één plek gebruikt worden.
-- Geen dependencies toevoegen tenzij expliciet gevraagd (de enige
-  externe dependency is de Supabase JS-client via een `<script>`-tag
-  in `index.html`).
+- Geen dependencies toevoegen tenzij expliciet gevraagd (er zijn er
+  nu geen: geen `package.json`).
 - Bump het versienummer (`APP_VERSION` in `app.js`, zichtbaar in de
   header) en de `CACHE`-naam in `sw.js` bij elke live-deploy, zodat
   gebruikers niet vastzitten aan een verouderde cache.
-- Wijzigingen op `main` gaan direct live — er is geen aparte
-  staging-omgeving.
+- Wijzigingen op `main` gaan direct live via Vercel; andere branches
+  krijgen een preview-URL.
