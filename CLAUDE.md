@@ -10,7 +10,7 @@ al gelezen hebt.
 
 **Dit is een Single-Page Vanilla HTML/JS app. Geen build-stap, geen
 framework (geen React/Vue/etc), geen bundler, geen package.json.**
-De bestanden worden direct, ongewijzigd geserveerd door GitHub Pages.
+De bestanden worden direct, ongewijzigd geserveerd door Vercel.
 Niet voorstellen om een build-tool, framework of bundler te
 introduceren — dat past niet bij dit project.
 
@@ -44,7 +44,8 @@ geen inlogscherm en geen auth: het is een persoonlijke naslag-app.
 
 **Vercel** (team `bevertje`), gedeployed vanaf de `main` branch van de
 GitHub-repo. Statische bestanden plus de functie in `api/`. Geen build-stap.
-De oude GitHub Pages-versie draait niet meer op deze code.
+De oude GitHub Pages-versie stuurt bezoekers door naar Vercel (zie het
+scriptje bovenin `index.html`).
 
 ## Regels voor wijzigingen
 
