@@ -1,4 +1,4 @@
-const CACHE = 'dd-tracker-v2.0.0';
+const CACHE = 'dd-tracker-v2.1.0';
 const APP_SHELL = [
   './',
   './index.html',

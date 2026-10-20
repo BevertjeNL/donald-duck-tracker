@@ -1,4 +1,4 @@
-const APP_VERSION = '2.0.0';
+const APP_VERSION = '2.1.0';
 document.addEventListener('DOMContentLoaded', () => {
   const el = document.getElementById('appVersion');
   if (el) el.textContent = 'v' + APP_VERSION;
@@ -397,6 +397,22 @@ $('qcResult').addEventListener('click', async () => {
     qcCurrentRow = await insertRow({ type, year, number, is_special: false, gelezen: true, gelezen_op: new Date().toISOString() });
   }
   if (qcCurrentRow) renderQcResult();
+});
+
+// ---------- backup ----------
+$('btnBackup').addEventListener('click', async () => {
+  if (!(await refetchMagazines())) return;
+  const now = new Date();
+  const pad = (n) => String(n).padStart(2, '0');
+  const stamp = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+  const backup = { app: 'donald-duck-tracker', version: APP_VERSION, exported_at: now.toISOString(), magazines };
+  const url = URL.createObjectURL(new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' }));
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `donald-duck-tracker-backup-${stamp}.json`;
+  link.click();
+  URL.revokeObjectURL(url);
+  showStatus(`Backup gemaakt: ${magazines.length} edities.`, 'success');
 });
 
 // ---------- navigation ----------
