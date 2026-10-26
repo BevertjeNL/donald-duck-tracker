@@ -8,6 +8,7 @@ gelezen hebt, per jaargang en met een heatmap.
 
 ## Wat kan de app
 
+- **Startscherm:** teller van alle gelezen edities, voortgangsbalk per tijdschrift en snelkoppelingen naar Snel opzoeken en Backup.
 - **Donald Duck Weekblad:** per jaargang, week 1 t/m 52, als heatmap. Tik op
   een tegel om gelezen of ongelezen te wisselen.
 - **Katrien Duck Weekblad:** per jaargang, maand 1 t/m 12.
@@ -21,6 +22,7 @@ gelezen hebt, per jaargang en met een heatmap.
   deelmenu (kies "Bewaar in Bestanden"), elders wordt het bestand gedownload.
   Het startscherm toont hoe lang geleden je laatste backup was.
 - **PWA:** op je beginscherm te zetten (iOS en Android), met eigen icoon.
+  Op iPhone schermvullend, met ruimte voor de notch.
   De app-bestanden worden gecachet, maar zonder internet laadt de data niet.
 - Je voortgang staat in een database, dus op elk apparaat hetzelfde.
   Wijzigingen van een ander apparaat zie je na herladen.

@@ -43,9 +43,9 @@ Browser (index.html + app.js)  --fetch-->  /api/magazines  --HTTPS-->  Neon Post
 
 | Bestand | Inhoud |
 |---|---|
-| `index.html` | Alle markup. Eén pagina met `.view`-secties (home, yeargrid, pockets, quickcheck) die met JS worden getoond of verborgen, geen router. Laadscherm `#authScreen`, app `#appScreen`. |
+| `index.html` | Alle markup. Eén pagina met `.view`-secties (home, yeargrid, pockets, quickcheck). Knoppen voor Backup en Snel opzoeken staan op meerdere plekken en gebruiken `data-do="backup"` en `data-do="quickcheck"` die met JS worden getoond of verborgen, geen router. Laadscherm `#authScreen`, app `#appScreen`. |
 | `app.js` | Alle logica in één bestand, geen modules. |
-| `style.css` | Alle styling. Donker navy/goud thema, kleuren als CSS-variabelen in `:root`. |
+| `style.css` | Alle styling. Donker navy/goud thema, kleuren als CSS-variabelen in `:root`. Schermvullend voor iOS: topbalk, `main` en laadscherm gebruiken `env(safe-area-inset-*)`, hoogte via `100dvh`. |
 | `api/magazines.js` | Vercel-functie (CommonJS). Praat met Neon via de SQL-over-HTTP-endpoint (`https://<host>/sql`) met alleen `fetch`. |
 | `schema.sql` | Tabel `magazines`, check-constraint en twee unieke indexen. Eenmalig draaien in Neon. |
 | `sw.js` | Service worker. Cachet de app-shell, nooit `/api/`. |
@@ -98,8 +98,12 @@ Volgorde in het bestand:
    alleen op dit apparaat.
 4. Data: `refetchMagazines`, `toggleGelezen`, `insertRow`, `deleteRow`. De
    lijst staat in de globale `magazines`.
+4b. Startscherm (`renderHome`): teller gelezen edities, laatst gelezen
+   editie, voortgangsbalk per tijdschrift, kaarten Snel opzoeken en Backup.
+   Wordt bij `showView('view-home')` en na elke refetch opnieuw getekend.
 5. Jaaroverzicht (DD en KD): jaarchips plus heatmap-tegels. Gelezen is rood,
-   ongelezen is gedimd. Tikken wisselt de status of maakt de rij aan.
+   ongelezen is gedimd. Tikken wisselt de status of maakt de rij aan
+   (met pop-animatie). Boven de heatmap staat de voortgang van het jaar.
    Speciale edities komen als extra tegels erbij.
 6. Pockets: tabs Pocket en Dubbel Pocket, lijst met wisselen, bewerken
    (via `prompt`) en verwijderen.
@@ -116,6 +120,15 @@ Volgorde in het bestand:
 
 Er is geen realtime-sync. De lijst wordt stil ververst zodra de app weer op
 de voorgrond komt (`visibilitychange`).
+
+## iOS-details
+
+- `index.html` heeft `viewport-fit=cover` en `black-translucent` als
+  statusbalk. Elk element dat bovenaan of onderaan vastzit moet de
+  safe-area-marge meenemen, anders valt het onder de notch of home-balk.
+- Invoervelden zijn 16 px, anders zoomt iOS in.
+- Backup via `navigator.share` werkt alleen direct na een tik. Doe dus geen
+  `await fetch` vóór het delen.
 
 ## Service worker
 
