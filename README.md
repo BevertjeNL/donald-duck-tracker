@@ -16,8 +16,10 @@ gelezen hebt, per jaargang en met een heatmap.
 - **Speciale edities** toevoegen aan een jaargang.
 - **Jaargangen:** vanaf 2017, met `+ jaar` voor andere jaren.
 - **Snel opzoeken:** controleer of een specifiek nummer al gelezen is.
-- **Backup:** de knop 💾 downloadt alles als
-  `donald-duck-tracker-backup-JJJJ-MM-DD.json`.
+- **Backup:** de knop 💾 bewaart alles als
+  `donald-duck-tracker-backup-JJJJ-MM-DD.json`. Op iPhone opent het
+  deelmenu (kies "Bewaar in Bestanden"), elders wordt het bestand gedownload.
+  Het startscherm toont hoe lang geleden je laatste backup was.
 - **PWA:** op je beginscherm te zetten (iOS en Android), met eigen icoon.
   De app-bestanden worden gecachet, maar zonder internet laadt de data niet.
 - Je voortgang staat in een database, dus op elk apparaat hetzelfde.
@@ -66,4 +68,4 @@ icons/            App-iconen (192, 512, 1024 en apple-touch-icon)
 CLAUDE.md         Technische uitleg voor AI-sessies
 ```
 
-Versie: 2.1.1
+Versie: 2.2.0

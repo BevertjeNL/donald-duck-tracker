@@ -1,7 +1,7 @@
 # CLAUDE.md
 
 Spiekbriefje voor toekomstige AI-sessies op deze repo. Beschrijft de bouw
-zoals die nu is (versie 2.1.1).
+zoals die nu is (versie 2.2.0).
 
 ## Wat dit is
 
@@ -104,13 +104,18 @@ Volgorde in het bestand:
 6. Pockets: tabs Pocket en Dubbel Pocket, lijst met wisselen, bewerken
    (via `prompt`) en verwijderen.
 7. Snel opzoeken: type, jaar en nummer controleren, tikken om te wisselen.
-8. Backup: knop 💾 haalt de lijst vers op en downloadt
+8. Backup: knop 💾 (topbalk en kaart op het startscherm) bewaart
    `donald-duck-tracker-backup-JJJJ-MM-DD.json` met `app`, `version`,
-   `exported_at` en `magazines`.
+   `exported_at` en `magazines`. Gebruikt het deelmenu (`navigator.share`
+   met een bestand, op iOS "Bewaar in Bestanden") en valt terug op een
+   gewone download. Draait synchroon binnen de tik, anders weigert iOS het
+   deelmenu. Het moment van de laatste backup staat in `localStorage`
+   (`dd_tracker_last_backup`) en wordt op het startscherm getoond.
 9. Navigatie en `start()`: laadt de data, toont daarna het startscherm.
    Mislukt het laden, dan blijft het laadscherm met een foutmelding staan.
 
-Er is geen realtime-sync. Een ander apparaat ziet wijzigingen na herladen.
+Er is geen realtime-sync. De lijst wordt stil ververst zodra de app weer op
+de voorgrond komt (`visibilitychange`).
 
 ## Service worker
 

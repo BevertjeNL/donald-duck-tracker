@@ -33,38 +33,61 @@ if (location.hostname.endsWith('github.io')) location.replace('https://donald-du
   <header class="topbar">
     <div class="brand">&#129414; DD Tracker <span id="appVersion" class="version-badge"></span></div>
     <div class="topbar-actions">
-      <button id="btnBackup" class="icon-btn" title="Backup downloaden">&#128190;</button>
-      <button id="btnQuickCheck" class="icon-btn" title="Snel opzoeken">&#128269;</button>
+      <button class="icon-btn" data-do="backup" title="Backup bewaren" aria-label="Backup bewaren">&#128190;</button>
+      <button class="icon-btn" data-do="quickcheck" title="Snel opzoeken" aria-label="Snel opzoeken">&#128269;</button>
     </div>
   </header>
 
   <main>
     <!-- HOME -->
     <section id="view-home" class="view active">
+      <div class="hero">
+        <div class="hero-label">Jouw collectie</div>
+        <div class="hero-count"><span id="heroTotal">0</span><span class="hero-unit">edities gelezen</span></div>
+        <div id="heroLine" class="hero-line"></div>
+        <span class="hero-duck" aria-hidden="true">&#129414;</span>
+      </div>
+
       <div class="home-tiles">
         <button class="tile" data-open="dd_weekblad">
           <span class="emoji" aria-hidden="true">&#128218;</span>
-          <div>
+          <div class="tile-body">
             <div class="tile-title">Donald Duck Weekblad</div>
-            <div class="tile-sub">Per jaargang, week 1&ndash;52</div>
+            <div class="tile-sub" data-stat="dd_weekblad">Per jaargang, week 1&ndash;52</div>
+            <div class="progress"><span data-bar="dd_weekblad"></span></div>
           </div>
           <span class="tile-arrow" aria-hidden="true">&#8594;</span>
         </button>
         <button class="tile" data-open="kd_weekblad">
           <span class="emoji" aria-hidden="true">&#127925;</span>
-          <div>
+          <div class="tile-body">
             <div class="tile-title">Katrien Duck Weekblad</div>
-            <div class="tile-sub">Per jaargang, maand 1&ndash;12</div>
+            <div class="tile-sub" data-stat="kd_weekblad">Per jaargang, maand 1&ndash;12</div>
+            <div class="progress"><span data-bar="kd_weekblad"></span></div>
           </div>
           <span class="tile-arrow" aria-hidden="true">&#8594;</span>
         </button>
         <button class="tile" data-open="pockets">
           <span class="emoji" aria-hidden="true">&#128214;</span>
-          <div>
+          <div class="tile-body">
             <div class="tile-title">Pockets</div>
-            <div class="tile-sub">Pocket &amp; Dubbel Pocket</div>
+            <div class="tile-sub" data-stat="pockets">Pocket &amp; Dubbel Pocket</div>
+            <div class="progress"><span data-bar="pockets"></span></div>
           </div>
           <span class="tile-arrow" aria-hidden="true">&#8594;</span>
+        </button>
+      </div>
+
+      <div class="home-actions">
+        <button class="action-card" data-do="quickcheck">
+          <span class="action-icon" aria-hidden="true">&#128269;</span>
+          <span class="action-title">Snel opzoeken</span>
+          <span class="action-sub">Heb ik deze al?</span>
+        </button>
+        <button class="action-card" data-do="backup" id="backupCard">
+          <span class="action-icon" aria-hidden="true">&#128190;</span>
+          <span class="action-title">Backup bewaren</span>
+          <span class="action-sub" id="backupInfo">Nog nooit</span>
         </button>
       </div>
     </section>
@@ -76,6 +99,10 @@ if (location.hostname.endsWith('github.io')) location.replace('https://donald-du
         <h2 id="yeargridTitle">Donald Duck Weekblad</h2>
       </div>
       <div id="yearRow" class="year-row"></div>
+      <div class="year-progress">
+        <div id="yearProgressText" class="year-progress-text"></div>
+        <div class="progress"><span id="yearProgressBar"></span></div>
+      </div>
       <div id="heatmap" class="heatmap"></div>
 
       <div class="add-special-row">
